@@ -1,43 +1,37 @@
 ﻿## Create Disk
 
-
-#Input switches temp commented out
-<#
 param ([string]$PoolName,
-       [string]$SOFSName,
-       [uint64]$WitnessSize)
-#>
-
-$PoolName = "AER-Pool1"
+       [string]$SOFSName)
+      
 
 $WitnessVDName = "Cluster_Quorum_Witness_Disk"
 $HDDTierName = "HDDTier_Witness"
 
 Write-Host "Creating Cluster Disk Witness" -ForegroundColor Yellow
 
-#Input switches temp commented out
-<#
+
 if (!($PoolName))
 {
     Write-Host "Please enter a pool name" -ForegroundColor Red
-    Write-Host "Usage: .\ConfigureAeriandiWitnessShare.ps1 -PoolName <> -SOFSName <> -WitnessSize <>" -ForegroundColor Yellow
+    Write-Host "Usage: .\Creating_Cluster_Disk_Witness.ps1 -PoolName <> -SOFSName <>" -ForegroundColor Yellow
     exit 0
 }
 
 if (!($SOFSName))
 {
     Write-Host "Please enter the Scale-Out File Server name" -ForegroundColor Red
-    Write-Host "Usage: .\ConfigureAeriandiWitnessShare.ps1 -PoolName <> -SOFSName <> -WitnessSize <>" -ForegroundColor Yellow
+    Write-Host "Usage: .\Creating_Cluster_Disk_Witness.ps1 -PoolName <> -SOFSName <>" -ForegroundColor Yellow
     exit 0
 }
+<#
 
 if (!($WitnessSize))
 {
     Write-Host "Please enter the size of witness disk" -ForegroundColor Red
-    Write-Host "Usage: .\ConfigureAeriandiWitnessShare.ps1 -PoolName <> -SOFSName <> -WitnessSize <>" -ForegroundColor Yellow
+    Write-Host "Usage: .\Creating_Cluster_Disk_Witness.ps1 -PoolName <> -SOFSName <>" -ForegroundColor Yellow
     exit 0
-}    
-#>
+} #>   
+
 
 function Prepare-QorumVirtualDisk
 {
@@ -87,7 +81,7 @@ if (!($HDDTier))
 
 # Create the Witness Virtual Disk on the First pool selected from above
 Write-Host "Create the Witness VD" -ForegroundColor Yellow
-$WitnessVD = New-VirtualDisk -StoragePoolFriendlyName $WPool -FriendlyName $WitnessVDName -StorageTiers $HDDTier -StorageTierSizes 1GB -ResiliencySettingName Mirror -NumberOfDataCopies 3 -WriteCacheSize 1GB -NumberOfColumns 4 -Interleave 64KB
+$WitnessVD = New-VirtualDisk -StoragePoolFriendlyName $WPool -FriendlyName $WitnessVDName -StorageTiers $HDDTier -StorageTierSizes 1GB -ResiliencySettingName Mirror -NumberOfDataCopies 3 -WriteCacheSize 1GB -NumberOfColumns 1 -Interleave 64KB
 if (!($WitnessVD))
 {
     Write-Host "Failed to create the witness VD" -ForegroundColor Red
