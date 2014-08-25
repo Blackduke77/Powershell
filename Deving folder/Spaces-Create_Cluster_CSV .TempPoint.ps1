@@ -5,8 +5,6 @@
 #
 #
 $TieredMirroredvDisks = @("SMB1", "SMB2", "SMB3", "SMB4", "SMB5", "SMB6")
-$SOFSName = "2SOFS1"
-
 
 $Loc = Get-Location
 $Date = Get-Date -format yyyyMMdd_hhmmsstt
@@ -14,7 +12,7 @@ $logfile = $Loc.path + “\CreateSS_” + $Date + “.txt”
 #
 function log($string, $color)
 {
-	if ($Color -eq $null) { $color = "White" }
+	if ($Color -eq $null) { $color = “white” }
 	write-host $string -foregroundcolor $color
 	$temp = “: ” + $string
 	$string = Get-Date -format “yyyy.MM.dd hh:mm:ss tt”
@@ -25,7 +23,7 @@ function log($string, $color)
 Function PrepCSV ($CSVName)
 {
 	#Rename the disk resource in FCM
-	(Get-ClusterResource | where { $_.name -like "*$CSVName)" }).Name = $CSVName
+	(Get-ClusterResource | where { $_.name -like “ * $CSVName)” }).Name = $CSVName
 	
 	#Get the disk ID
 	Stop-ClusterResource $CSVName
@@ -41,29 +39,6 @@ Function PrepCSV ($CSVName)
 	Add-ClusterSharedVolume -Name $CSVName
 	$OldCSVName = ((Get-ClusterSharedVolume $CSVName).SharedVOlumeInfo).FriendlyVolumeName
 	Rename-Item $OldCSVName -NewName “$CSVName”
-}
-
-function CreateShare
-{
-	
-	$WitnessShareName = "$WPool-$vDisk" + "-Share"
-	$WitnessSharePath = "C:\ClusterStorage" + "\" + "$WPool-$vDisk" + "\" + $WitnessShareName
-	
-	# Create the Share directory
-	New-Item -Path $WitnessSharePath -ItemType directory
-	if ($? -eq $false)
-	{
-		Write-Host "Failed to create the witness share directory" -ForegroundColor Red
-		exit 0
-	}
-	$NTFS_ACL = Get-Acl $WitnessSharePath
-	$Everyone_Rule = New-Object System.Security.AccessControl.FileSystemAccessRule("Everyone", "FullControl", "ContainerInherit, ObjectInherit", "None", "Allow")
-	$NTFS_ACL.AddAccessRule($Everyone_Rule)
-	Set-Acl $WitnessSharePath -AclObject $NTFS_ACL
-	Start-Sleep -s 10
-	
-	# Create SMB Share and scope it to the Scale-Out File Server created
-	New-SmbShare -Name $WitnessShareName -Path $WitnessSharePath -ContinuouslyAvailable $true -FullAccess everyone -ScopeName $SOFSName -Verbose
 }
 
 #Define the Pool Storage Tiers
@@ -87,6 +62,5 @@ ForEach ($vDisk in $TieredMirroredvDisks)
 		log “vDisk ‘$vDisk’ creation succeeded” green
 	}
 	else { log “vDisk ‘$vDisk’ creation failed..stopping” yellow; break }
-	PrepCSV "$WPool-$vDisk"
-	CreateShare
+	PrepCSV $WPool-$vDisk
 }
