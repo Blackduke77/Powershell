@@ -80,7 +80,7 @@ ForEach ($vDisk in $TieredMirroredvDisks)
 	log “Attempting to create vDisk ‘$vDisk’.. ”
 	$Pools = Get-StoragePool | ? { $_.FriendlyName -like "*pool*" }
 	$WPool = $Pools[0].FriendlyName
-	$Status = Get-StoragePool $WPool | New-VirtualDisk -FriendlyName $WPool-$vDisk -IsEnclosureAware $True -ResiliencySettingName Mirror -NumberOfDataCopies 3 -NumberOfColumns 4 -Interleave 65536 –StorageTiers $ssd_tier, $hdd_tier -StorageTierSizes 264GB, 5000GB -WriteCacheSize 5GB -ProvisioningType Fixed
+	$Status = Get-StoragePool $WPool | New-VirtualDisk -FriendlyName $WPool-$vDisk -IsEnclosureAware $True -ResiliencySettingName Mirror -NumberOfDataCopies 3 -NumberOfColumns 4 -Interleave 65536 –StorageTiers $ssd_tier, $hdd_tier -StorageTierSizes 264GB, 5000GB -WriteCacheSize 1GB -ProvisioningType Fixed
 	log ($Status | Out-String)
 	if ($Status.OperationalStatus -eq “OK”)
 	{
