@@ -13,7 +13,10 @@
 		work with standalone storage.
 
 	.EXAMPLE
-		.\Create-Pool.ps1 -PoolName DiskPool1
+		.\Step1-Create-Pool.ps1 -PoolName DiskPool1
+
+    .Notes
+    Need to get script to rename cluster object to pool name
 
 #>
 

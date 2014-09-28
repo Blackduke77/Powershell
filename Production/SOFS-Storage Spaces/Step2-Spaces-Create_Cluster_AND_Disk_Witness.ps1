@@ -12,6 +12,9 @@
 
 	.EXAMPLE
 		.\Spaces-Create_Cluster_Disk_Witness.ps1 -PoolName <> -SOFSName <>
+
+    .Notes
+    Need to Add Pool validation to confirm pool exists
 #>
 
 
